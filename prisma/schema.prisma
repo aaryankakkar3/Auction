@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Player {
+  id                   String        @id @default(uuid())
+  name                 String
+  gender               Gender
+  age                  Int
+  preferredHand        PreferredHand
+  bestAchievement      String
+  currentState         CurrentState @default(UNAUCTIONED)
+  soldPrice            Int?          // Final price if sold
+  soldToCaptainId      String?       // Which captain bought them
+  soldToCaptain        Captain?      @relation("SoldPlayers", fields: [soldToCaptainId], references: [id])
+  
+  bids                 Bid[]
+  auctionSessions      AuctionSession[]
+}
+
+model Captain {
+  id                   String        @id @default(uuid())
+  name                 String        @unique
+  startingBudget       Int
+  remainingBudget      Int
+  
+  bids                 Bid[]
+  boughtPlayers        Player[]      @relation("SoldPlayers")
+}
+
+model Bid {
+  id                   String        @id @default(uuid())
+  price                Int
+  bidderId             String
+  bidder               Captain       @relation(fields: [bidderId], references: [id])
+  playerId             String
+  player               Player        @relation(fields: [playerId], references: [id])
+  isWinningBid         Boolean       @default(false)
+}
+
+model AuctionSession {
+  id                   String        @id @default("singleton")
+  currentPlayerId      String?
+  currentPlayer        Player?       @relation(fields: [currentPlayerId], references: [id])
+  timerStartedAt       DateTime?
+  status               AuctionStatus @default(WAITING)
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum PreferredHand {
+  RIGHT
+  LEFT
+}
+
+enum CurrentState {
+  UNAUCTIONED
+  SOLD
+  UNSOLD
+}
+
+enum AuctionStatus {
+  WAITING
+  ACTIVE
+  COMPLETED_APPROVAL_PENDING
+  COMPLETED
+}
