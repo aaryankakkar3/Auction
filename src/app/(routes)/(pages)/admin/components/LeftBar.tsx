@@ -8,7 +8,7 @@ interface PoolOptions {
 
 function LeftBar() {
   return (
-    <div className="flex flex-col gap-5 w-175">
+    <div className="flex flex-col gap-5 w-175 h-full">
       <PickNextPoolComponent />
       <CompletePlayerListComponent />
     </div>

@@ -11,7 +11,7 @@ function page() {
     <div className="h-screen w-screen flex justify-center items-center">
       <div className="w-400 h-210 flex flex-col gap-5">
         <Navbar />
-        <div className="flex flex-row gap-5 ">
+        <div className="flex flex-row gap-5 h-full">
           <LeftBar />
           <CenterBar />
           <RightBar />
