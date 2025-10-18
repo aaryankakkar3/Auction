@@ -6,30 +6,10 @@ interface PoolOptions {
   [key: string]: boolean;
 }
 
-interface LeftBarProps {
-  mensPoolOptions: PoolOptions;
-  womensPoolOptions: PoolOptions;
-  handleMensToggle: (option: string) => void;
-  handleWomensToggle: (option: string) => void;
-  onStart: () => void;
-}
-
-function LeftBar({
-  mensPoolOptions,
-  womensPoolOptions,
-  handleMensToggle,
-  handleWomensToggle,
-  onStart,
-}: LeftBarProps) {
+function LeftBar() {
   return (
     <div className="flex flex-col gap-5 w-175">
-      <PickNextPoolComponent
-        mensPoolOptions={mensPoolOptions}
-        womensPoolOptions={womensPoolOptions}
-        handleMensToggle={handleMensToggle}
-        handleWomensToggle={handleWomensToggle}
-        onStart={onStart}
-      />
+      <PickNextPoolComponent />
       <CompletePlayerListComponent />
     </div>
   );
