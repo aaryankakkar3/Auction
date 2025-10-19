@@ -19,7 +19,9 @@ function RemainingPlayerListItem({
     >
       <p className="w-[20%] ">{index}</p>
       <p className="w-[40%] ">{name}</p>
-      <p className="w-[20%] ">{gender}</p>
+      <p className="w-[20%] ">
+        {gender.charAt(0).toUpperCase() + gender.slice(1).toLowerCase()}
+      </p>
       <p className="w-[20%] ">{age}</p>
     </div>
   );

@@ -119,7 +119,6 @@ export async function POST(request: NextRequest) {
           data: {
             currentPlayerId: selectedPlayer.id,
             status: "WAITING",
-            timerStartedAt: new Date(),
           },
           include: {
             currentPlayer: true,
@@ -129,7 +128,6 @@ export async function POST(request: NextRequest) {
           data: {
             currentPlayerId: selectedPlayer.id,
             status: "WAITING",
-            timerStartedAt: new Date(),
           },
           include: {
             currentPlayer: true,

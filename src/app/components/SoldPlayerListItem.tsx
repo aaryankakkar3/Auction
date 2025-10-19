@@ -24,7 +24,9 @@ function SoldPlayerListItem({
       <p className="w-[10%] ">{index}</p>
       <p className="w-[30%] ">{name}</p>
       <p className="w-[30%] ">{captain}</p>
-      <p className="w-[10%] ">{gender}</p>
+      <p className="w-[10%] ">
+        {gender.charAt(0).toUpperCase() + gender.slice(1).toLowerCase()}
+      </p>
       <p className="w-[10%] ">{age}</p>
       <p className="w-[10%] ">{price}</p>
     </div>
