@@ -3,7 +3,11 @@
 import React, { useEffect, useState } from "react";
 import BidButtonVariants from "./BidButtonVariants";
 
-function CenterBar() {
+function CenterBar({
+  clearance,
+}: {
+  clearance: "admin" | "captain" | "spectator";
+}) {
   const [auctionSession, setAuctionSession] = useState<any>(null);
   const [currentPlayer, setCurrentPlayer] = useState<any>(null);
 
@@ -33,15 +37,12 @@ function CenterBar() {
     checkAuctionSession();
   }, []);
 
-  const clearance = "admin";
-
   function BidStatusComponent() {
     return (
       <>
-        {(auctionSession.status == "ACTIVE" ||
-          auctionSession.status == "COMPLETED_APPROVAL_PENDING") && (
+        {auctionSession.status == "ACTIVE" && (
           <div className="flex flex-col gap-1 text-[32px] text-center">
-            <p className="">Current bid: ${auctionSession?.currentBid}</p>
+            <p className="">Current bid: ${auctionSession?.bidPrice}</p>
             <p className="">Bid by: {auctionSession?.biddingCaptain}</p>
           </div>
         )}
@@ -50,10 +51,17 @@ function CenterBar() {
             Waiting for admin to start the bidding for this player
           </p>
         )}
+        {auctionSession.status == "COMPLETED_APPROVAL_PENDING" && (
+          <div className="flex flex-col gap-1 text-[32px] text-center">
+            <p className="">Highest bid: ${auctionSession?.bidPrice}</p>
+            <p className="">Bid by: {auctionSession?.biddingCaptain}</p>
+          </div>
+        )}
         {auctionSession.status == "COMPLETED" && (
-          <p className="text-center text-[32px] text-accent1">
-            Bidding completed, waiting for admin approval
-          </p>
+          <div className="flex flex-col gap-1 text-[32px] text-center">
+            <p className="">Sold to: {auctionSession?.biddingCaptain}</p>
+            <p className="">Selling price: ${auctionSession?.bidPrice}</p>
+          </div>
         )}
       </>
     );
@@ -61,7 +69,7 @@ function CenterBar() {
 
   function ExtraDetailsComponent() {
     return (
-      <div className="flex flex-row gap-0 p-5 text-[32px] justify-center">
+      <div className=" flex flex-row gap-0 p-5 text-[32px] justify-center">
         <div className="flex flex-col gap-1 w-full">
           <p className="text-text2 text-center">Gender</p>
           <p className="text-center">
@@ -87,7 +95,7 @@ function CenterBar() {
   }
 
   return (
-    <div className="flex flex-col gap-10 w-135 h-full">
+    <div className="flex flex-col justify-between w-135 h-full">
       {auctionSession && (
         <>
           <img
@@ -95,20 +103,18 @@ function CenterBar() {
             alt=""
             className="w-135 h-76 rounded-2xl"
           />
-          <div className="flex flex-col justify-between h-full">
-            <div className="flex flex-col gap-1">
-              <p className="text-center text-[40px]">{currentPlayer?.name}</p>
-              <ExtraDetailsComponent />
-              <p className="text-center text-[32px]">
-                {currentPlayer.bestAchievement}
-              </p>
-            </div>
-            <BidStatusComponent />
-            <BidButtonVariants
-              clearance={clearance}
-              auctionSession={auctionSession}
-            />
+          <p className="text-center text-[40px]">{currentPlayer?.name}</p>
+          <div className="flex flex-col gap-1">
+            <ExtraDetailsComponent />
+            <p className="text-center text-[32px]">
+              {currentPlayer.bestAchievement}
+            </p>
           </div>
+          <BidStatusComponent />
+          <BidButtonVariants
+            clearance={clearance}
+            auctionSession={auctionSession}
+          />
         </>
       )}
       {!auctionSession && (

@@ -15,7 +15,9 @@ function BidButtonVariants({
       {clearance == "admin" && (
         <AdminMainButton auctionSession={auctionSession} />
       )}
-      {clearance == "captain" && <CaptainMainButton />}
+      {clearance == "captain" && (
+        <CaptainMainButton auctionSession={auctionSession} />
+      )}
     </>
   );
 }

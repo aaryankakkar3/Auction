@@ -13,7 +13,7 @@ function page() {
         <Navbar />
         <div className="flex flex-row gap-5 h-full">
           <LeftBar />
-          <CenterBar />
+          <CenterBar clearance="admin" />
           <RightBar />
         </div>
       </div>

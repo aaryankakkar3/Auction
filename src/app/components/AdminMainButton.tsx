@@ -1,17 +1,17 @@
 import React from "react";
 
 function AdminMainButton({ auctionSession }: { auctionSession: any }) {
-  const handleApprovePlayer = async () => {};
-  const handlePauseBidding = async () => {};
-  const handleResumeBidding = async () => {};
-  const handleStopBidding = async () => {};
-  const handleRestartBidding = async () => {};
-  const handleDiscardBidding = async () => {};
-  const handleFinishBidding = async () => {};
+  const handleApprovePlayer = () => {};
+  const handlePauseBidding = () => {};
+  const handleResumeBidding = () => {};
+  const handleStopBidding = () => {};
+  const handleRestartBidding = () => {};
+  const handleDiscardBidding = () => {};
+  const handleFinishBidding = () => {};
   return (
     <>
       {auctionSession.status == "COMPLETED" && (
-        <div className="w-full p-5 bg-accent1 rounded-2xl text-[40px] text-center cursor-pointer">
+        <div className="w-full opacity-80 p-5 bg-accent1 rounded-2xl text-[40px] text-center cursor-pointer">
           <p className="w-full">Pick next pool</p>
         </div>
       )}
