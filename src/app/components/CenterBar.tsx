@@ -43,7 +43,7 @@ function CenterBar({
         {auctionSession.status == "ACTIVE" && (
           <div className="flex flex-col gap-1 text-[32px] text-center">
             <p className="">Current bid: ${auctionSession?.bidPrice}</p>
-            <p className="">Bid by: {auctionSession?.biddingCaptain}</p>
+            <p className="">Bid by: {auctionSession?.biddingCaptain?.name}</p>
           </div>
         )}
         {auctionSession.status == "WAITING" && (
@@ -54,12 +54,12 @@ function CenterBar({
         {auctionSession.status == "COMPLETED_APPROVAL_PENDING" && (
           <div className="flex flex-col gap-1 text-[32px] text-center">
             <p className="">Highest bid: ${auctionSession?.bidPrice}</p>
-            <p className="">Bid by: {auctionSession?.biddingCaptain}</p>
+            <p className="">Bid by: {auctionSession?.biddingCaptain?.name}</p>
           </div>
         )}
         {auctionSession.status == "COMPLETED" && (
           <div className="flex flex-col gap-1 text-[32px] text-center">
-            <p className="">Sold to: {auctionSession?.biddingCaptain}</p>
+            <p className="">Sold to: {auctionSession?.biddingCaptain?.name}</p>
             <p className="">Selling price: ${auctionSession?.bidPrice}</p>
           </div>
         )}

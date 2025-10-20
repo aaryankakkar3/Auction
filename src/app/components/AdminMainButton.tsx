@@ -1,13 +1,15 @@
 import React from "react";
+import {
+  handleApprovePlayer,
+  handlePauseBidding,
+  handleResumeBidding,
+  handleStopBidding,
+  handleRestartBidding,
+  handleDiscardBidding,
+  handleFinishBidding,
+} from "../utils/auctionActions";
 
 function AdminMainButton({ auctionSession }: { auctionSession: any }) {
-  const handleApprovePlayer = () => {};
-  const handlePauseBidding = () => {};
-  const handleResumeBidding = () => {};
-  const handleStopBidding = () => {};
-  const handleRestartBidding = () => {};
-  const handleDiscardBidding = () => {};
-  const handleFinishBidding = () => {};
   return (
     <>
       {auctionSession.status == "COMPLETED" && (

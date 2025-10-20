@@ -52,7 +52,7 @@ function PickNextPoolComponent() {
       console.log("Selected pools:", selectedPools);
       console.log("Include unsold:", includeUnsold);
 
-      const response = await fetch("/api/pickNextPlayer", {
+      const response = await fetch("/api/bidding_controls/pickNextPlayer", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
