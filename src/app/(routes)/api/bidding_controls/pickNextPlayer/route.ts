@@ -110,29 +110,29 @@ export async function POST(request: NextRequest) {
     const randomIndex = Math.floor(Math.random() * eligiblePlayers.length);
     const selectedPlayer = eligiblePlayers[randomIndex];
 
-    // Create or update auction session (only if previous session was completed or none exists)
-    const auctionSession = existingSession
-      ? await prisma.auctionSession.update({
-          where: {
-            id: existingSession.id,
-          },
-          data: {
-            currentPlayerId: selectedPlayer.id,
-            status: "WAITING",
-          },
-          include: {
-            currentPlayer: true,
-          },
-        })
-      : await prisma.auctionSession.create({
-          data: {
-            currentPlayerId: selectedPlayer.id,
-            status: "WAITING",
-          },
-          include: {
-            currentPlayer: true,
-          },
-        });
+    // Delete existing auction session and create a fresh one
+    if (existingSession) {
+      await prisma.auctionSession.delete({
+        where: {
+          id: existingSession.id,
+        },
+      });
+      console.log("Previous auction session deleted");
+    }
+
+    // Create fresh auction session with clean data
+    const auctionSession = await prisma.auctionSession.create({
+      data: {
+        currentPlayerId: selectedPlayer.id,
+        status: "WAITING",
+        lastBidAt: null,
+        bidPrice: null,
+        biddingCaptainId: null,
+      },
+      include: {
+        currentPlayer: true,
+      },
+    });
 
     console.log("Auction session created/updated for:", selectedPlayer.name);
 

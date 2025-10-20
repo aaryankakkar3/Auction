@@ -25,8 +25,8 @@ model Player {
 
 model Captain {
   id                   String        @id @default(uuid())
+  username             String?       @unique
   name                 String        @unique
-  startingBudget       Int
   remainingBudget      Int
   
   boughtPlayers        Player[]      @relation("SoldPlayers")

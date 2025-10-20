@@ -57,12 +57,28 @@ function CenterBar({
             <p className="">Bid by: {auctionSession?.biddingCaptain?.name}</p>
           </div>
         )}
-        {auctionSession.status == "COMPLETED" && (
-          <div className="flex flex-col gap-1 text-[32px] text-center">
-            <p className="">Sold to: {auctionSession?.biddingCaptain?.name}</p>
-            <p className="">Selling price: ${auctionSession?.bidPrice}</p>
-          </div>
-        )}
+        {auctionSession.status == "COMPLETED" &&
+          currentPlayer.currentState == "SOLD" && (
+            <div className="flex flex-col gap-1 text-[32px] text-center">
+              <p className="">
+                Sold to: {auctionSession?.biddingCaptain?.name}
+              </p>
+              <p className="">Selling price: ${auctionSession?.bidPrice}</p>
+            </div>
+          )}
+        {auctionSession.status == "COMPLETED" &&
+          currentPlayer.currentState == "UNSOLD" && (
+            <p className="text-center text-[32px] text-accent1">
+              Player left unsold. They will be transferred to the unsold pool.
+            </p>
+          )}
+        {auctionSession.status == "COMPLETED" &&
+          currentPlayer.currentState == "UNAUCTIONED" && (
+            <p className="text-center text-[32px] text-accent1">
+              Admin has discarded this auction session. Player remains
+              unauctioned.
+            </p>
+          )}
       </>
     );
   }

@@ -88,9 +88,33 @@ export const handleRestartBidding = async () => {
   }
 };
 
-export const handleDiscardBidding = () => {
-  // TODO: Implement discard bidding logic
-  console.log("Discard bidding clicked");
+export const handleDiscardBidding = async () => {
+  try {
+    console.log("Discarding bidding...");
+
+    const response = await fetch("/api/bidding_controls/discardBidding", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      console.log("Bidding discarded successfully:", result.message);
+      console.log("Updated session:", result.data);
+
+      // Show confirmation to user
+      alert(result.message);
+    } else {
+      console.error("Failed to discard bidding:", result.message);
+      alert(`Error: ${result.message}`);
+    }
+  } catch (error) {
+    console.error("Error discarding bidding:", error);
+    alert("Failed to discard bidding. Please try again.");
+  }
 };
 
 export const handleFinishBidding = async () => {

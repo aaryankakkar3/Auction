@@ -26,13 +26,16 @@ function AdminMainButton({ auctionSession }: { auctionSession: any }) {
         </button>
       )}
       {auctionSession.status == "ACTIVE" && (
-        <div className="flex flex-row gap-5 w-full text-[32px]">
+        <div className="flex flex-row gap-5 w-full text-[32px] items-center">
           <button
             onClick={handlePauseBidding}
             className="w-full p-5 cursor-pointer rounded-2xl hover:opacity-80 bg-accent1 "
           >
             Pause
           </button>
+          <div className="text-center w-full text-[40px] cursor-pointer rounded-2xl font-semibold">
+            5 secs
+          </div>
           <button
             onClick={handleStopBidding}
             className="w-full p-5 cursor-pointer rounded-2xl hover:opacity-80 bg-accent1 "
