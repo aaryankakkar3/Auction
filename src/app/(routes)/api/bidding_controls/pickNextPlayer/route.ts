@@ -1,5 +1,6 @@
 import { PrismaClient } from "../../../../../generated/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import { Server as SocketServer } from "socket.io";
 
 const prisma = new PrismaClient();
 
@@ -131,10 +132,37 @@ export async function POST(request: NextRequest) {
       },
       include: {
         currentPlayer: true,
+        biddingCaptain: true,
       },
     });
 
     console.log("Auction session created/updated for:", selectedPlayer.name);
+
+    // Emit Socket.IO event to update all clients
+    const globalThis_ = globalThis as any;
+    const io = globalThis_.__socketIO;
+    if (io) {
+      // Emit auction session update directly to clients
+      io.emit("auctionSessionUpdate", {
+        id: auctionSession.id,
+        status: auctionSession.status,
+        currentPlayer: auctionSession.currentPlayer,
+        bidPrice: auctionSession.bidPrice,
+        biddingCaptain: auctionSession.biddingCaptain,
+        currentPlayerId: auctionSession.currentPlayerId,
+        lastBidAt: auctionSession.lastBidAt,
+        biddingCaptainId: auctionSession.biddingCaptainId,
+        changeType: "NEW_PLAYER_SELECTED",
+        timestamp: new Date().toISOString(),
+      });
+
+      // Also emit timer reset event
+      io.emit("updateAuctionSession", {
+        shouldResetTimer: true,
+      });
+
+      console.log("📡 Emitted auction session update via Socket.IO");
+    }
 
     return NextResponse.json({
       success: true,

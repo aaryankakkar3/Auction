@@ -1,5 +1,6 @@
 import { PrismaClient } from "../../../../../generated/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import { stopAuctionTimer } from "@/app/utils/auctionTimer";
 
 const prisma = new PrismaClient();
 
@@ -49,6 +50,28 @@ export async function POST(request: NextRequest) {
       "Bidding stopped for player:",
       updatedSession.currentPlayer?.name
     );
+
+    // Emit Socket.IO event for real-time updates
+    const globalThis_ = globalThis as any;
+    const io = globalThis_.__socketIO;
+    if (io) {
+      // Stop the auction timer
+      stopAuctionTimer(io);
+
+      // Emit auction session update to clients
+      io.emit("auctionSessionUpdate", {
+        id: updatedSession.id,
+        status: updatedSession.status,
+        currentPlayer: updatedSession.currentPlayer,
+        bidPrice: updatedSession.bidPrice,
+        biddingCaptain: updatedSession.biddingCaptain,
+        currentPlayerId: updatedSession.currentPlayerId,
+        lastBidAt: updatedSession.lastBidAt,
+        biddingCaptainId: updatedSession.biddingCaptainId,
+        changeType: "BIDDING_STOPPED",
+        timestamp: new Date().toISOString(),
+      });
+    }
 
     return NextResponse.json({
       success: true,

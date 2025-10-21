@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   handleApprovePlayer,
   handlePauseBidding,
@@ -8,8 +8,25 @@ import {
   handleDiscardBidding,
   handleFinishBidding,
 } from "../utils/auctionActions";
+import { useSocket } from "@/hooks/useSocket";
 
 function AdminMainButton({ auctionSession }: { auctionSession: any }) {
+  const { socket } = useSocket();
+  const [timeLeft, setTimeLeft] = useState<number>(30);
+
+  // Listen for timer updates
+  useEffect(() => {
+    if (socket) {
+      socket.on("timer_update", (timerData: { timeLeft: number }) => {
+        setTimeLeft(timerData.timeLeft);
+      });
+
+      // Cleanup listener
+      return () => {
+        socket.off("timer_update");
+      };
+    }
+  }, [socket]);
   return (
     <>
       {auctionSession.status == "COMPLETED" && (
@@ -33,8 +50,10 @@ function AdminMainButton({ auctionSession }: { auctionSession: any }) {
           >
             Pause
           </button>
-          <div className="text-center w-full text-[40px] cursor-pointer rounded-2xl font-semibold">
-            5 secs
+          <div
+            className={`text-center w-full text-[40px] cursor-pointer rounded-2xl font-semibold `}
+          >
+            {timeLeft}s
           </div>
           <button
             onClick={handleStopBidding}

@@ -2,6 +2,7 @@ import Section from "@/app/components/ui/Section";
 import React from "react";
 import PoolOption from "./PoolOption";
 import Button from "@/app/components/ui/Button";
+import { useSocket } from "@/hooks/useSocket";
 
 function PickNextPoolComponent() {
   const [mensPoolOptions, setMensPoolOptions] = React.useState({
@@ -18,8 +19,50 @@ function PickNextPoolComponent() {
     "Women's 60+": false,
   });
   const [isLoading, setIsLoading] = React.useState(false);
+  const [auctionSession, setAuctionSession] = React.useState<any>(null);
+  const { socket } = useSocket();
+
+  // Check if component should be enabled
+  const isEnabled =
+    !auctionSession ||
+    auctionSession.status === "WAITING" ||
+    auctionSession.status === "COMPLETED";
+
+  // Load auction session on component mount and listen for updates
+  React.useEffect(() => {
+    const checkAuctionSession = async () => {
+      try {
+        const response = await fetch("/api/getAuctionSession");
+        const result = await response.json();
+
+        if (result.success && result.data) {
+          setAuctionSession(result.data);
+        } else {
+          setAuctionSession(null);
+        }
+      } catch (error) {
+        console.error("Error checking auction session:", error);
+        setAuctionSession(null);
+      }
+    };
+
+    // Initial load
+    checkAuctionSession();
+
+    // Listen for real-time auction session updates
+    if (socket) {
+      socket.on("auctionSessionUpdate", (updatedAuctionSession: any) => {
+        setAuctionSession(updatedAuctionSession);
+      });
+
+      return () => {
+        socket.off("auctionSessionUpdate");
+      };
+    }
+  }, [socket]);
 
   const handleMensToggle = (option: string) => {
+    if (!isEnabled) return;
     setMensPoolOptions({
       ...mensPoolOptions,
       [option]: !mensPoolOptions[option as keyof typeof mensPoolOptions],
@@ -27,6 +70,7 @@ function PickNextPoolComponent() {
   };
 
   const handleWomensToggle = (option: string) => {
+    if (!isEnabled) return;
     setWomensPoolOptions({
       ...womensPoolOptions,
       [option]: !womensPoolOptions[option as keyof typeof womensPoolOptions],
@@ -34,6 +78,7 @@ function PickNextPoolComponent() {
   };
 
   const handleStart = async () => {
+    if (!isEnabled) return;
     setIsLoading(true);
 
     try {
@@ -99,35 +144,49 @@ function PickNextPoolComponent() {
     }
   };
   return (
-    <Section className="w-full">
+    <Section
+      className={`w-full ${!isEnabled ? "opacity-50 cursor-not-allowed" : ""}`}
+    >
       <p className="text-center font-semibold">Pick next pool</p>
       <div className="flex flex-row gap-5">
         <div className="flex flex-col gap-2.5 w-full">
           {Object.entries(mensPoolOptions).map(([option, isSelected]) => (
-            <PoolOption
+            <div
               key={option}
-              option={option}
-              isSelected={isSelected}
-              onToggle={handleMensToggle}
-            />
+              className={!isEnabled ? "cursor-not-allowed" : ""}
+            >
+              <PoolOption
+                key={option}
+                option={option}
+                isSelected={isSelected}
+                onToggle={handleMensToggle}
+              />
+            </div>
           ))}
         </div>
         <div className="h-full w-[1px] bg-text2"></div>
         <div className="flex flex-col gap-2.5 w-full">
           {Object.entries(womensPoolOptions).map(([option, isSelected]) => (
-            <PoolOption
+            <div
               key={option}
-              option={option}
-              isSelected={isSelected}
-              onToggle={handleWomensToggle}
-            />
+              className={!isEnabled ? "cursor-not-allowed" : ""}
+            >
+              <PoolOption
+                key={option}
+                option={option}
+                isSelected={isSelected}
+                onToggle={handleWomensToggle}
+              />
+            </div>
           ))}
         </div>
       </div>
       <Button
-        className="bg-accent1 px-5 py-2.5 m-auto"
+        className={`bg-accent1 px-5 py-2.5 m-auto ${
+          !isEnabled ? "cursor-not-allowed" : ""
+        }`}
         onClick={handleStart}
-        disabled={isLoading}
+        disabled={isLoading || !isEnabled}
       >
         {isLoading ? "Starting..." : "Start"}
       </Button>

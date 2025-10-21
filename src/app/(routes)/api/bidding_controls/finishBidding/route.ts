@@ -1,5 +1,6 @@
 import { PrismaClient } from "../../../../../generated/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import { stopAuctionTimer } from "@/app/utils/auctionTimer";
 
 const prisma = new PrismaClient();
 
@@ -106,6 +107,52 @@ export async function POST(request: NextRequest) {
         `Player ${auctionSession.currentPlayer.name} SOLD to ${biddingCaptain.name} for ${bidPrice}`
       );
 
+      // Emit Socket.IO events for real-time updates
+      const globalThis_ = globalThis as any;
+      const io = globalThis_.__socketIO;
+      if (io) {
+        // Stop the auction timer
+        stopAuctionTimer(io);
+
+        // Emit auction session update to clients
+        io.emit("auctionSessionUpdate", {
+          id: result.updatedSession.id,
+          status: result.updatedSession.status,
+          currentPlayer: result.updatedSession.currentPlayer,
+          bidPrice: result.updatedSession.bidPrice,
+          biddingCaptain: result.updatedSession.biddingCaptain,
+          currentPlayerId: result.updatedSession.currentPlayerId,
+          lastBidAt: result.updatedSession.lastBidAt,
+          biddingCaptainId: result.updatedSession.biddingCaptainId,
+          changeType: "PLAYER_SOLD",
+          timestamp: new Date().toISOString(),
+        });
+
+        // Emit player update for SOLD state
+        io.emit("playerUpdate", {
+          playerId: result.updatedPlayer.id,
+          name: result.updatedPlayer.name,
+          currentState: result.updatedPlayer.currentState,
+          soldPrice: result.updatedPlayer.soldPrice,
+          soldToCaptainId: result.updatedPlayer.soldToCaptainId,
+          changeType: "SOLD",
+          timestamp: new Date().toISOString(),
+        });
+
+        // Emit captain update for budget decrease
+        io.emit("captainUpdate", {
+          captainId: result.updatedCaptain.id,
+          name: result.updatedCaptain.name,
+          username: result.updatedCaptain.username,
+          remainingBudget: result.updatedCaptain.remainingBudget,
+          changeType: "BUDGET_DECREASE",
+          playerId: result.updatedPlayer.id,
+          playerName: result.updatedPlayer.name,
+          salePrice: bidPrice,
+          timestamp: new Date().toISOString(),
+        });
+      }
+
       return NextResponse.json({
         success: true,
         message: `Player ${auctionSession.currentPlayer.name} sold to ${biddingCaptain.name} for ${bidPrice}`,
@@ -143,6 +190,39 @@ export async function POST(request: NextRequest) {
       });
 
       console.log(`Player ${auctionSession.currentPlayer.name} went UNSOLD`);
+
+      // Emit Socket.IO events for real-time updates
+      const globalThis_ = globalThis as any;
+      const io = globalThis_.__socketIO;
+      if (io) {
+        // Stop the auction timer
+        stopAuctionTimer(io);
+
+        // Emit auction session update to clients
+        io.emit("auctionSessionUpdate", {
+          id: result.updatedSession.id,
+          status: result.updatedSession.status,
+          currentPlayer: result.updatedSession.currentPlayer,
+          bidPrice: result.updatedSession.bidPrice,
+          biddingCaptain: result.updatedSession.biddingCaptain,
+          currentPlayerId: result.updatedSession.currentPlayerId,
+          lastBidAt: result.updatedSession.lastBidAt,
+          biddingCaptainId: result.updatedSession.biddingCaptainId,
+          changeType: "PLAYER_UNSOLD",
+          timestamp: new Date().toISOString(),
+        });
+
+        // Emit player update for UNSOLD state
+        io.emit("playerUpdate", {
+          playerId: result.updatedPlayer.id,
+          name: result.updatedPlayer.name,
+          currentState: result.updatedPlayer.currentState,
+          soldPrice: result.updatedPlayer.soldPrice,
+          soldToCaptainId: result.updatedPlayer.soldToCaptainId,
+          changeType: "UNSOLD",
+          timestamp: new Date().toISOString(),
+        });
+      }
 
       return NextResponse.json({
         success: true,

@@ -1,11 +1,32 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { useSocket } from "@/hooks/useSocket";
 
 function CaptainMainButton({ auctionSession }: { auctionSession: any }) {
   const params = useParams();
-  const username = params.captain as string;
+  const username = params?.captain
+    ? Array.isArray(params.captain)
+      ? params.captain[0]
+      : params.captain
+    : "";
+  const { socket } = useSocket();
+  const [timeLeft, setTimeLeft] = useState<number>(30); // Default to 30 seconds
+
+  // Listen for timer updates
+  useEffect(() => {
+    if (socket) {
+      socket.on("timer_update", (timerData: { timeLeft: number }) => {
+        setTimeLeft(timerData.timeLeft);
+      });
+
+      // Cleanup listener
+      return () => {
+        socket.off("timer_update");
+      };
+    }
+  }, [socket]);
   const handleBid = async () => {
     try {
       // Calculate the bid amount
@@ -79,7 +100,7 @@ function CaptainMainButton({ auctionSession }: { auctionSession: any }) {
                 parseInt(process.env.NEXT_PUBLIC_BID_INCREMENT || "100")}
           </p>
           <p>Bid</p>
-          <p>5 secs</p>
+          <p className="">{timeLeft}s</p>
         </button>
       )}
     </>

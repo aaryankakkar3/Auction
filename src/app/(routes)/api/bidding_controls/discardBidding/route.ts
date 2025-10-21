@@ -1,5 +1,6 @@
 import { PrismaClient } from "../../../../../generated/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import { Server as SocketServer } from "socket.io";
 
 const prisma = new PrismaClient();
 
@@ -54,6 +55,26 @@ export async function POST(request: NextRequest) {
       "Auction session discarded for player:",
       updatedSession.currentPlayer?.name
     );
+
+    // Emit Socket.IO event to update all clients
+    const globalThis_ = globalThis as any;
+    const io = globalThis_.__socketIO;
+    if (io) {
+      // Emit auction session update directly to clients
+      io.emit("auctionSessionUpdate", {
+        id: updatedSession.id,
+        status: updatedSession.status,
+        currentPlayer: updatedSession.currentPlayer,
+        bidPrice: updatedSession.bidPrice,
+        biddingCaptain: updatedSession.biddingCaptain,
+        currentPlayerId: updatedSession.currentPlayerId,
+        lastBidAt: updatedSession.lastBidAt,
+        biddingCaptainId: updatedSession.biddingCaptainId,
+        changeType: "BIDDING_DISCARDED",
+        timestamp: new Date().toISOString(),
+      });
+      console.log("📡 Emitted auction session update via Socket.IO");
+    }
 
     return NextResponse.json({
       success: true,

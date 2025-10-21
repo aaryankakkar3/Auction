@@ -1,5 +1,6 @@
 import { PrismaClient } from "../../../../../generated/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import { startAuctionTimer } from "@/app/utils/auctionTimer";
 
 const prisma = new PrismaClient();
 
@@ -134,6 +135,28 @@ export async function POST(request: NextRequest) {
       `Bid placed: ${username} bid $${bidAmount} for ${result.updatedSession.currentPlayer?.name}`
     );
 
+    // Emit Socket.IO event for real-time updates
+    const globalThis_ = globalThis as any;
+    const io = globalThis_.__socketIO;
+
+    if (io) {
+      // Emit auction session update to clients
+      io.emit("auctionSessionUpdate", {
+        id: result.updatedSession.id,
+        status: result.updatedSession.status,
+        currentPlayer: result.updatedSession.currentPlayer,
+        bidPrice: result.updatedSession.bidPrice,
+        biddingCaptain: result.updatedSession.biddingCaptain,
+        currentPlayerId: result.updatedSession.currentPlayerId,
+        lastBidAt: result.updatedSession.lastBidAt,
+        biddingCaptainId: result.updatedSession.biddingCaptainId,
+        changeType: "NEW_BID",
+        timestamp: new Date().toISOString(),
+      });
+
+      // Start auction timer with auto-completion
+      startAuctionTimer(io);
+    }
     return NextResponse.json({
       success: true,
       message: `Bid of $${bidAmount} placed successfully by ${username}`,

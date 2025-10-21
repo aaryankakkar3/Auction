@@ -1,5 +1,6 @@
 import { PrismaClient } from "../../../../../generated/prisma";
 import { NextRequest, NextResponse } from "next/server";
+import { startAuctionTimer } from "@/app/utils/auctionTimer";
 
 const prisma = new PrismaClient();
 
@@ -50,6 +51,29 @@ export async function POST(request: NextRequest) {
       "Auction session approved and activated for player:",
       updatedSession.currentPlayer?.name
     );
+
+    // Get Socket.IO server and broadcast update
+    const globalThis_ = globalThis as any;
+    const io = globalThis_.__socketIO;
+
+    if (io) {
+      // Emit auction session update to clients
+      io.emit("auctionSessionUpdate", {
+        id: updatedSession.id,
+        status: updatedSession.status,
+        currentPlayer: updatedSession.currentPlayer,
+        bidPrice: updatedSession.bidPrice,
+        biddingCaptain: updatedSession.biddingCaptain,
+        currentPlayerId: updatedSession.currentPlayerId,
+        lastBidAt: updatedSession.lastBidAt,
+        biddingCaptainId: updatedSession.biddingCaptainId,
+        changeType: "PLAYER_APPROVED",
+        timestamp: new Date().toISOString(),
+      });
+
+      // Start auction timer with auto-completion
+      startAuctionTimer(io);
+    }
 
     return NextResponse.json({
       success: true,

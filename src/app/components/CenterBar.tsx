@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import BidButtonVariants from "./BidButtonVariants";
+import { useSocket } from "@/hooks/useSocket";
 
 function CenterBar({
   clearance,
@@ -10,7 +11,11 @@ function CenterBar({
 }) {
   const [auctionSession, setAuctionSession] = useState<any>(null);
   const [currentPlayer, setCurrentPlayer] = useState<any>(null);
+  const { socket, isConnected } = useSocket();
 
+  console.log("🔍 CenterBar - clearance:", clearance, "socket:", !!socket);
+
+  // Initial data fetch - only run once on mount
   useEffect(() => {
     const checkAuctionSession = async () => {
       try {
@@ -20,8 +25,8 @@ function CenterBar({
         if (result.success && result.data) {
           setAuctionSession(result.data);
           setCurrentPlayer(result.data.currentPlayer);
-          console.log("Auction session:", result.data);
-          console.log("Current player:", result.data.currentPlayer);
+          console.log("Initial auction session:", result.data);
+          console.log("Initial current player:", result.data.currentPlayer);
         } else {
           setAuctionSession(null);
           setCurrentPlayer(null);
@@ -35,7 +40,48 @@ function CenterBar({
     };
 
     checkAuctionSession();
-  }, []);
+  }, []); // Only run once on mount
+
+  // Socket.IO listeners - run when socket becomes available
+  useEffect(() => {
+    console.log(
+      "🔧 Socket useEffect - socket:",
+      !!socket,
+      "isConnected:",
+      isConnected,
+      "clearance:",
+      clearance
+    );
+    if (socket && isConnected) {
+      console.log("🎧 CenterBar setting up Socket.IO listeners");
+
+      // Single listener for all auction session updates
+      socket.on("auctionSessionUpdate", (fullAuctionSession: any) => {
+        console.log("📢 Received auction session update:", fullAuctionSession);
+        console.log("📢 Current clearance:", clearance);
+        console.log("📢 Setting auction session:", fullAuctionSession);
+
+        // Update the complete auction session
+        setAuctionSession(fullAuctionSession);
+
+        // Update current player if it exists
+        if (fullAuctionSession.currentPlayer) {
+          setCurrentPlayer(fullAuctionSession.currentPlayer);
+          console.log(
+            "📢 Updated current player:",
+            fullAuctionSession.currentPlayer.name
+          );
+        }
+      });
+
+      // Cleanup listeners
+      return () => {
+        socket.off("auctionSessionUpdate");
+      };
+    } else {
+      console.warn("⚠️ No socket available for CenterBar listener");
+    }
+  }, [socket, isConnected]);
 
   function BidStatusComponent() {
     return (
