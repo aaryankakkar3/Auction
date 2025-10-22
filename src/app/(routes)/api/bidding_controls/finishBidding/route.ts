@@ -130,11 +130,6 @@ export async function POST(request: NextRequest) {
 
         // Emit player update for SOLD state
         io.emit("playerUpdate", {
-          playerId: result.updatedPlayer.id,
-          name: result.updatedPlayer.name,
-          currentState: result.updatedPlayer.currentState,
-          soldPrice: result.updatedPlayer.soldPrice,
-          soldToCaptainId: result.updatedPlayer.soldToCaptainId,
           changeType: "SOLD",
           timestamp: new Date().toISOString(),
         });
@@ -214,11 +209,6 @@ export async function POST(request: NextRequest) {
 
         // Emit player update for UNSOLD state
         io.emit("playerUpdate", {
-          playerId: result.updatedPlayer.id,
-          name: result.updatedPlayer.name,
-          currentState: result.updatedPlayer.currentState,
-          soldPrice: result.updatedPlayer.soldPrice,
-          soldToCaptainId: result.updatedPlayer.soldToCaptainId,
           changeType: "UNSOLD",
           timestamp: new Date().toISOString(),
         });

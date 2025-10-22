@@ -7,6 +7,7 @@ function SoldPlayerListItem({
   gender,
   age,
   price,
+  category,
 }: {
   index: number;
   name: string;
@@ -14,6 +15,7 @@ function SoldPlayerListItem({
   gender: string;
   age: number;
   price: number;
+  category: string;
 }) {
   return (
     <div
@@ -22,13 +24,14 @@ function SoldPlayerListItem({
       } rounded-[8px]`}
     >
       <p className="w-[10%] ">{index}</p>
-      <p className="w-[30%] ">{name}</p>
-      <p className="w-[30%] ">{captain}</p>
+      <p className="w-[25%] ">{name}</p>
+      <p className="w-[25%] ">{captain}</p>
       <p className="w-[10%] ">
         {gender.charAt(0).toUpperCase() + gender.slice(1).toLowerCase()}
       </p>
       <p className="w-[10%] ">{age}</p>
       <p className="w-[10%] ">{price}</p>
+      <p className="w-[10%] ">{category}</p>
     </div>
   );
 }
