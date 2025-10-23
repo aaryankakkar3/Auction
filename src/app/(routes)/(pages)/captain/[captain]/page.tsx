@@ -5,6 +5,7 @@ import Navbar from "@/app/components/Navbar";
 import RightBar from "./components/RightBar";
 import React from "react";
 import LeftBar from "./components/LeftBar";
+import AlternateLeftBar from "./components/AlternateLeftBar";
 
 function page({ params }: { params: Promise<{ captain: string }> }) {
   const [personalMode, setPersonalMode] = React.useState(true);
@@ -19,11 +20,14 @@ function page({ params }: { params: Promise<{ captain: string }> }) {
           setPersonalMode={setPersonalMode}
         />
         <div className="flex flex-row gap-5 h-full">
-          <LeftBar
-            captainView={captainView}
-            setCaptainView={setCaptainView}
-            pageOwnerCaptain={resolvedParams.captain}
-          />
+          {personalMode && (
+            <LeftBar
+              captainView={captainView}
+              setCaptainView={setCaptainView}
+              pageOwnerCaptain={resolvedParams.captain}
+            />
+          )}
+          {!personalMode && <AlternateLeftBar />}
           <CenterBar clearance="captain" />
           <RightBar captainView={captainView} />
         </div>

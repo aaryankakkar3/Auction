@@ -7,7 +7,7 @@ import SoldPlayerListItem from "./SoldPlayerListItem";
 import RemainingPlayerListItem from "./RemainingPlayerListItem";
 import { useSocket } from "@/hooks/useSocket";
 
-function CompletePlayerListComponent() {
+function CompletePlayerListComponent({ isAdmin }: { isAdmin?: boolean }) {
   const [soldPlayers, setSoldPlayers] = useState<any[]>([]);
   const [remainingPlayers, setRemainingPlayers] = useState<any[]>([]);
   const [listType, setListType] = useState<"SOLD" | "REMAINING">("REMAINING");
@@ -62,7 +62,7 @@ function CompletePlayerListComponent() {
   }, [socket, isConnected]);
 
   return (
-    <Section className="h-full overflow-hidden">
+    <Section className="h-full overflow-hidden w-full">
       <div className="flex flex-row justify-between">
         <p className="font-semibold">Players</p>
         <div className="flex flex-row gap-0 rounded-[8px] bg-bg1">
@@ -83,7 +83,11 @@ function CompletePlayerListComponent() {
         </div>
       </div>
       {listType == "SOLD" && (
-        <div className="flex flex-col gap-0 overflow-auto h-full max-h-91.5">
+        <div
+          className={`flex flex-col gap-0 overflow-auto h-full ${
+            isAdmin && "max-h-91.5"
+          }`}
+        >
           <div className="w-full p-5 flex flex-row text-left font-semibold bg-bg3 rounded-[8px]">
             <p className="w-[10%] ">No.</p>
             <p className="w-[25%] ">Name</p>
@@ -108,7 +112,11 @@ function CompletePlayerListComponent() {
         </div>
       )}
       {listType == "REMAINING" && (
-        <div className="flex flex-col gap-0 overflow-auto h-full max-h-91.5">
+        <div
+          className={`flex flex-col gap-0 overflow-auto h-full ${
+            isAdmin && "max-h-91.5"
+          } `}
+        >
           <div className="w-full p-5 flex flex-row text-left font-semibold bg-bg3 rounded-[8px]">
             <p className="w-[17.5%] ">No.</p>
             <p className="w-[30%] ">Name</p>

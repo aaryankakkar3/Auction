@@ -6,7 +6,7 @@ function LeftBar() {
   return (
     <div className="flex flex-col gap-5 w-175 h-full">
       <PickNextPoolComponent />
-      <CompletePlayerListComponent />
+      <CompletePlayerListComponent isAdmin={true} />
     </div>
   );
 }

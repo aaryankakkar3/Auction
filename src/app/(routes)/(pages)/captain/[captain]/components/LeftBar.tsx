@@ -1,6 +1,4 @@
 import React from "react";
-import AveragesStats from "../../../../../components/AveragesStats";
-import PlayersBreakdown from "../../../../../components/PlayersBreakdown";
 import MyTeam from "@/app/components/MyTeam";
 import ChooseProfile from "@/app/components/ChooseProfile";
 import MyStats from "@/app/components/MyStats";
