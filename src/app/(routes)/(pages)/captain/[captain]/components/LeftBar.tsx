@@ -23,8 +23,8 @@ function LeftBar({
           setCaptainView={setCaptainView}
           pageOwnerCaptain={pageOwnerCaptain}
         />
-        <MyStats />
-        <TeamStrengthGraph />
+        <MyStats captainView={captainView} />
+        <TeamStrengthGraph captainView={captainView} />
       </div>
       <MyTeam captainView={captainView} />
     </div>
