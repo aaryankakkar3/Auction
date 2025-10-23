@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useSocket } from "@/hooks/useSocket";
+import toast from "react-hot-toast";
 
 function CaptainMainButton({ auctionSession }: { auctionSession: any }) {
   const params = useParams();
@@ -44,11 +45,11 @@ function CaptainMainButton({ auctionSession }: { auctionSession: any }) {
 
       // Validate values before sending
       if (!username) {
-        alert("Username is missing!");
+        toast.error("Username is missing!");
         return;
       }
       if (!bidAmount || isNaN(bidAmount)) {
-        alert("Invalid bid amount!");
+        toast.error("Invalid bid amount!");
         return;
       }
 
@@ -68,16 +69,14 @@ function CaptainMainButton({ auctionSession }: { auctionSession: any }) {
       if (result.success) {
         console.log("Bid placed successfully:", result.message);
         console.log("Updated auction:", result.data);
-
-        // Show success message
-        alert(result.message);
+        // Toast notification will be handled by Socket.IO event in CenterBar
       } else {
         console.error("Failed to place bid:", result.message);
-        alert(`Error: ${result.message}`);
+        toast.error(result.message);
       }
     } catch (error) {
       console.error("Error placing bid:", error);
-      alert("Failed to place bid. Please try again.");
+      toast.error("Failed to place bid. Please try again.");
     }
   };
   return (
@@ -87,7 +86,12 @@ function CaptainMainButton({ auctionSession }: { auctionSession: any }) {
           <p className="w-full">WAITING FOR ADMIN</p>
         </div>
       )}
-      {auctionSession.status == "ACTIVE" && (
+      {auctionSession.status == "ACTIVE" && auctionSession.pausedAt && (
+        <div className="w-full p-5 bg-accent1 opacity-80 rounded-2xl text-[40px] text-center cursor-pointer">
+          <p className="w-full">BIDDING PAUSED</p>
+        </div>
+      )}
+      {auctionSession.status == "ACTIVE" && !auctionSession.pausedAt && (
         <button
           onClick={handleBid}
           className="w-full p-5 hover:opacity-80 bg-accent1 rounded-2xl text-[40px] text-center cursor-pointer flex flex-row justify-between"

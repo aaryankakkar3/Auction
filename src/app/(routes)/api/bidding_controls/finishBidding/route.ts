@@ -128,24 +128,7 @@ export async function POST(request: NextRequest) {
           timestamp: new Date().toISOString(),
         });
 
-        // Emit player update for SOLD state
-        io.emit("playerUpdate", {
-          changeType: "SOLD",
-          timestamp: new Date().toISOString(),
-        });
-
-        // Emit captain update for budget decrease
-        io.emit("captainUpdate", {
-          captainId: result.updatedCaptain.id,
-          name: result.updatedCaptain.name,
-          username: result.updatedCaptain.username,
-          remainingBudget: result.updatedCaptain.remainingBudget,
-          changeType: "BUDGET_DECREASE",
-          playerId: result.updatedPlayer.id,
-          playerName: result.updatedPlayer.name,
-          salePrice: bidPrice,
-          timestamp: new Date().toISOString(),
-        });
+        // Note: playerUpdate emission removed to prevent duplicate toasts
       }
 
       return NextResponse.json({
@@ -207,11 +190,7 @@ export async function POST(request: NextRequest) {
           timestamp: new Date().toISOString(),
         });
 
-        // Emit player update for UNSOLD state
-        io.emit("playerUpdate", {
-          changeType: "UNSOLD",
-          timestamp: new Date().toISOString(),
-        });
+        // Note: playerUpdate emission removed to prevent duplicate toasts
       }
 
       return NextResponse.json({

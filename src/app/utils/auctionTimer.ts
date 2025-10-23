@@ -22,12 +22,16 @@ export async function startAuctionTimer(io: SocketIOServer) {
 
   console.log(`⏰ Starting ${timerDuration}s countdown timer`);
 
+  // Store current time in global variable for pause functionality
+  globalThis_.__currentTimeLeft = currentTimeLeft;
+
   // Broadcast initial timer state
   io.emit("timer_update", { timeLeft: currentTimeLeft });
 
   // Start countdown
   globalThis_.__auctionTimer = setInterval(async () => {
     currentTimeLeft--;
+    globalThis_.__currentTimeLeft = currentTimeLeft; // Keep global variable updated
     io.emit("timer_update", { timeLeft: currentTimeLeft });
 
     if (currentTimeLeft <= 0) {
@@ -79,6 +83,7 @@ export function stopAuctionTimer(io: SocketIOServer) {
   if (globalThis_.__auctionTimer) {
     clearInterval(globalThis_.__auctionTimer);
     globalThis_.__auctionTimer = null;
+    globalThis_.__currentTimeLeft = 0; // Clear global time variable
     console.log("⏰ Timer stopped");
 
     // Stop timer updates to clients

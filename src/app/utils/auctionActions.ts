@@ -1,4 +1,5 @@
 // Auction action handlers for admin functionality
+import toast from "react-hot-toast";
 
 export const handleApprovePlayer = async () => {
   try {
@@ -18,22 +19,64 @@ export const handleApprovePlayer = async () => {
       console.log("Updated session:", result.data);
     } else {
       console.error("Failed to approve player:", result.message);
-      alert(`Error: ${result.message}`);
+      toast.error(result.message);
     }
   } catch (error) {
     console.error("Error approving player:", error);
-    alert("Failed to approve player. Please try again.");
+    toast.error("Failed to approve player. Please try again.");
   }
 };
 
-export const handlePauseBidding = () => {
-  // TODO: Implement pause bidding logic
-  console.log("Pause bidding clicked");
+export const handlePauseBidding = async () => {
+  try {
+    console.log("Pausing bidding...");
+
+    const response = await fetch("/api/bidding_controls/pauseBidding", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      console.log("Bidding paused successfully:", result.message);
+      console.log("Time remaining:", result.data.timeRemaining);
+    } else {
+      console.error("Failed to pause bidding:", result.message);
+      toast.error(result.message);
+    }
+  } catch (error) {
+    console.error("Error pausing bidding:", error);
+    toast.error("Failed to pause bidding. Please try again.");
+  }
 };
 
-export const handleResumeBidding = () => {
-  // TODO: Implement resume bidding logic
-  console.log("Resume bidding clicked");
+export const handleResumeBidding = async () => {
+  try {
+    console.log("Resuming bidding...");
+
+    const response = await fetch("/api/bidding_controls/resumeBidding", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      console.log("Bidding resumed successfully:", result.message);
+      console.log("Remaining time:", result.data.remainingTime);
+    } else {
+      console.error("Failed to resume bidding:", result.message);
+      toast.error(result.message);
+    }
+  } catch (error) {
+    console.error("Error resuming bidding:", error);
+    toast.error("Failed to resume bidding. Please try again.");
+  }
 };
 
 export const handleStopBidding = async () => {
@@ -54,11 +97,11 @@ export const handleStopBidding = async () => {
       console.log("Updated session:", result.data);
     } else {
       console.error("Failed to stop bidding:", result.message);
-      alert(`Error: ${result.message}`);
+      toast.error(result.message);
     }
   } catch (error) {
     console.error("Error stopping bidding:", error);
-    alert("Failed to stop bidding. Please try again.");
+    toast.error("Failed to stop bidding. Please try again.");
   }
 };
 
@@ -80,11 +123,11 @@ export const handleRestartBidding = async () => {
       console.log("Updated session:", result.data);
     } else {
       console.error("Failed to restart bidding:", result.message);
-      alert(`Error: ${result.message}`);
+      toast.error(result.message);
     }
   } catch (error) {
     console.error("Error restarting bidding:", error);
-    alert("Failed to restart bidding. Please try again.");
+    toast.error("Failed to restart bidding. Please try again.");
   }
 };
 
@@ -106,14 +149,14 @@ export const handleDiscardBidding = async () => {
       console.log("Updated session:", result.data);
 
       // Show confirmation to user
-      alert(result.message);
+      toast.success(result.message);
     } else {
       console.error("Failed to discard bidding:", result.message);
-      alert(`Error: ${result.message}`);
+      toast.error(result.message);
     }
   } catch (error) {
     console.error("Error discarding bidding:", error);
-    alert("Failed to discard bidding. Please try again.");
+    toast.error("Failed to discard bidding. Please try again.");
   }
 };
 
@@ -136,13 +179,13 @@ export const handleFinishBidding = async () => {
       console.log("Updated session:", result.data);
 
       // Show success message to user
-      alert(result.message);
+      toast.success(result.message);
     } else {
       console.error("Failed to finish bidding:", result.message);
-      alert(`Error: ${result.message}`);
+      toast.error(result.message);
     }
   } catch (error) {
     console.error("Error finishing bidding:", error);
-    alert("Failed to finish bidding. Please try again.");
+    toast.error("Failed to finish bidding. Please try again.");
   }
 };

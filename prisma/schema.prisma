@@ -42,6 +42,7 @@ model AuctionSession {
   biddingCaptainId     String?       @unique // Foreign key for the captain
   biddingCaptain       Captain?      @relation(fields: [biddingCaptainId], references: [id])
   status               AuctionStatus @default(WAITING)
+  pausedAt             Int?
 }
 
 enum Gender {

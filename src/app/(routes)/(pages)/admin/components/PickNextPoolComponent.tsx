@@ -3,6 +3,7 @@ import React from "react";
 import PoolOption from "./PoolOption";
 import Button from "@/app/components/ui/Button";
 import { useSocket } from "@/hooks/useSocket";
+import toast from "react-hot-toast";
 
 function PickNextPoolComponent() {
   const [mensPoolOptions, setMensPoolOptions] = React.useState({
@@ -124,21 +125,22 @@ function PickNextPoolComponent() {
       } else {
         console.log("Auction start failed:", data.error);
         if (data.error === "ACTIVE_SESSION_EXISTS") {
-          // TODO: Show toast about active session
-          alert(
+          toast.error(
             "Another auction session is already active. Please complete it first."
           );
         } else if (data.error === "NO_POOLS_SELECTED") {
-          alert("Please select at least one pool to start the auction.");
+          toast.error("Please select at least one pool to start the auction.");
         } else if (data.error === "NO_ELIGIBLE_PLAYERS") {
-          alert("No eligible players found matching the selected criteria.");
+          toast.error(
+            "No eligible players found matching the selected criteria."
+          );
         } else {
-          alert("Failed to start auction: " + data.message);
+          toast.error("Failed to start auction: " + data.message);
         }
       }
     } catch (error) {
       console.error("Error starting auction:", error);
-      alert("An error occurred while starting the auction.");
+      toast.error("An error occurred while starting the auction.");
     } finally {
       setIsLoading(false);
     }

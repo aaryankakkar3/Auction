@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import BidButtonVariants from "./BidButtonVariants";
 import { useSocket } from "@/hooks/useSocket";
+import toast from "react-hot-toast";
 
 function CenterBar({
   clearance,
@@ -72,11 +73,81 @@ function CenterBar({
             fullAuctionSession.currentPlayer.name
           );
         }
+
+        // Show toast notifications for auction session updates
+        if (fullAuctionSession.changeType) {
+          switch (fullAuctionSession.changeType) {
+            case "PLAYER_SOLD":
+              toast.success(
+                `${fullAuctionSession.currentPlayer?.name} sold to ${fullAuctionSession.biddingCaptain?.name} for $${fullAuctionSession.bidPrice}`
+              );
+              break;
+            case "PLAYER_UNSOLD":
+              toast(`${fullAuctionSession.currentPlayer?.name} went unsold`);
+              break;
+            case "NEW_BID":
+              toast(
+                `New bid: $${fullAuctionSession.bidPrice} by ${fullAuctionSession.biddingCaptain?.name}`
+              );
+              break;
+            case "BIDDING_STOPPED":
+              toast(
+                `Bidding stopped for ${fullAuctionSession.currentPlayer?.name}`
+              );
+              break;
+            case "BIDDING_RESTARTED":
+              toast.success(
+                `Bidding restarted for ${fullAuctionSession.currentPlayer?.name}`
+              );
+              break;
+            case "PLAYER_APPROVED":
+              toast.success(
+                `Auction started for ${fullAuctionSession.currentPlayer?.name}`
+              );
+              break;
+            case "NEW_PLAYER_SELECTED":
+              toast.success(
+                `Next player: ${fullAuctionSession.currentPlayer?.name}`
+              );
+              break;
+            case "AUCTION_STARTED":
+              toast.success(
+                `Auction started for ${fullAuctionSession.currentPlayer?.name}`
+              );
+              break;
+            case "AUCTION_PAUSED":
+              toast(`Auction paused`);
+              break;
+            case "AUCTION_RESUMED":
+              toast(`Auction resumed`);
+              break;
+            case "TIMER_EXPIRED":
+              toast(`Time's up! Auction completed`);
+              break;
+            case "BIDDING_DISCARDED":
+              toast(
+                `Bidding discarded for ${fullAuctionSession.currentPlayer?.name}`
+              );
+              break;
+            default:
+              if (fullAuctionSession.message) {
+                toast(fullAuctionSession.message);
+              }
+          }
+        }
+      });
+
+      // Listen for player updates (for future use if needed)
+      socket.on("playerUpdate", (data: any) => {
+        console.log("📢 Received player update:", data);
+        // Note: Most player notifications now handled via auctionSessionUpdate
+        // This listener is kept for potential future player-specific updates
       });
 
       // Cleanup listeners
       return () => {
         socket.off("auctionSessionUpdate");
+        socket.off("playerUpdate");
       };
     } else {
       console.warn("⚠️ No socket available for CenterBar listener");
@@ -169,6 +240,27 @@ function CenterBar({
           <div className="flex flex-col gap-1">
             <ExtraDetailsComponent />
             <p className="text-center text-[32px]">
+              {(() => {
+                if (!currentPlayer?.gender || !currentPlayer?.age) return "";
+
+                const gender =
+                  currentPlayer.gender === "MALE" ? "Men's" : "Women's";
+                const age = currentPlayer.age;
+
+                if (age <= 16) {
+                  return `${gender} U-17`;
+                } else if (age >= 17 && age <= 39) {
+                  return `${gender} Open`;
+                } else if (age >= 40 && age <= 59) {
+                  return `${gender} 40+`;
+                } else if (age >= 60) {
+                  return `${gender} 60+`;
+                }
+
+                return `${gender} Open`; // Default fallback
+              })()}
+            </p>
+            <p className="text-center text-[28px]">
               {currentPlayer.bestAchievement}
             </p>
           </div>

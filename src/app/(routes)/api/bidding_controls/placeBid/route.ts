@@ -68,22 +68,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // 5. Timer check - if lastBidAt exists, check if time expired
-      if (auctionSession.lastBidAt) {
-        const timeSinceLastBid =
-          (new Date().getTime() -
-            new Date(auctionSession.lastBidAt).getTime()) /
-          1000;
-        if (timeSinceLastBid > TIMER_COUNTDOWN) {
-          throw new Error(
-            `TIMER_EXPIRED:Bidding time has expired. Last bid was ${Math.floor(
-              timeSinceLastBid
-            )} seconds ago`
-          );
-        }
-      }
-
-      // 6. Bid amount validation
+      // 5. Bid amount validation
       const currentBid = auctionSession.bidPrice || 0;
       const expectedBid =
         currentBid === 0 ? BASE_PRICE : currentBid + BID_INCREMENT;

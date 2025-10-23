@@ -3,6 +3,36 @@ import { NextResponse } from "next/server";
 
 const prisma = new PrismaClient();
 
+const dummyCaptains = [
+  {
+    name: "Namita Kakkar",
+    username: "namitakakkar",
+    remainingBudget: parseInt(
+      process.env.NEXT_PUBLIC_STARTING_BUDGET || "100000"
+    ),
+  },
+  {
+    name: "Aaryan Kakkar",
+    username: "aaryankakkar",
+    remainingBudget: parseInt(
+      process.env.NEXT_PUBLIC_STARTING_BUDGET || "100000"
+    ),
+  },
+  {
+    name: "Aashman Kakkar",
+    username: "aashmankakkar",
+    remainingBudget: parseInt(
+      process.env.NEXT_PUBLIC_STARTING_BUDGET || "100000"
+    ),
+  },
+  {
+    name: "Amit Kakkar",
+    username: "amitkakkar",
+    remainingBudget: parseInt(
+      process.env.NEXT_PUBLIC_STARTING_BUDGET || "100000"
+    ),
+  },
+];
 // Dummy player data extracted from your SQL
 const dummyPlayers = [
   // Under 17 Males

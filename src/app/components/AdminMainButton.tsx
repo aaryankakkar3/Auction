@@ -11,6 +11,7 @@ import {
 import { useSocket } from "@/hooks/useSocket";
 
 function AdminMainButton({ auctionSession }: { auctionSession: any }) {
+  const [isPaused, setIsPaused] = useState<boolean>(false);
   const { socket } = useSocket();
   const [timeLeft, setTimeLeft] = useState<number>(30);
 
@@ -42,7 +43,7 @@ function AdminMainButton({ auctionSession }: { auctionSession: any }) {
           Approve player
         </button>
       )}
-      {auctionSession.status == "ACTIVE" && (
+      {auctionSession.status == "ACTIVE" && !auctionSession.pausedAt && (
         <div className="flex flex-row gap-5 w-full text-[32px] items-center">
           <button
             onClick={handlePauseBidding}
@@ -55,6 +56,22 @@ function AdminMainButton({ auctionSession }: { auctionSession: any }) {
           >
             {timeLeft}s
           </div>
+          <button
+            onClick={handleStopBidding}
+            className="w-full p-5 cursor-pointer rounded-2xl hover:opacity-80 bg-accent1 "
+          >
+            Stop
+          </button>
+        </div>
+      )}
+      {auctionSession.status == "ACTIVE" && auctionSession.pausedAt && (
+        <div className="flex flex-row gap-5 w-full text-[32px] items-center">
+          <button
+            onClick={handleResumeBidding}
+            className="w-full p-5 cursor-pointer rounded-2xl hover:opacity-80 bg-accent1 "
+          >
+            Resume
+          </button>
           <button
             onClick={handleStopBidding}
             className="w-full p-5 cursor-pointer rounded-2xl hover:opacity-80 bg-accent1 "
