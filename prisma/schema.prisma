@@ -11,6 +11,7 @@ datasource db {
 model Player {
   id                   String        @id @default(uuid())
   name                 String
+  image                String?
   gender               Gender
   age                  Int
   preferredHand        PreferredHand
